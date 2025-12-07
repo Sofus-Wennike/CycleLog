@@ -1,5 +1,7 @@
 ﻿using CycleLog.DAL.Interfaces;
 using CycleLog.DAL.Models;
+using Dapper;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +19,56 @@ namespace CycleLog.DAL.DAO
             _connectionString = connectionString;
         }
 
-        public async Task<int> CreateTrainingSession(TrainingSession trainingSession)
+        public async Task<int> CreateTrainingSessionAsync(TrainingSession trainingSession)
         {
-            throw new NotImplementedException();
+            string sql = @"INSERT INTO TrainingSessions (UserId, DistanceKm) VALUES (@UserId, @DistanceKm) RETURNING Id;";
+
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        int newId = await connection.ExecuteScalarAsync<int>(sql,
+                            new
+                            {
+                                UserId = trainingSession.UserId,
+                                DistanceKm = trainingSession.DistanceKm
+                            }, 
+                            transaction);
+
+                        transaction.Commit();
+
+                        return newId;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+                        throw new Exception($"Error inserting TrainingSession. Message was {ex.Message}");
+                    }
+                }
+            }
         }
 
-        public async Task<IEnumerable<TrainingSession>> GetTrainingSessionsByUserId(string userId)
+        public async Task<IEnumerable<TrainingSession>> GetTrainingSessionsByUserIdAsync(string userId)
         {
-            throw new NotImplementedException();
+            string sql = @"SELECT * FROM TrainingSessions WHERE UserId = @UserId;";
+
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                IEnumerable<TrainingSession> trainingSessions = await connection.QueryAsync<TrainingSession>(sql,
+                    new
+                    {
+                        UserId = userId
+                    });
+
+                return trainingSessions;
+            }
         }
     }
 }

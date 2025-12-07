@@ -20,12 +20,24 @@ namespace CycleLog.ApiClient.ApiClients
             _restClient = new RestClient(_baseServiceUri);
         }
 
-        public async Task<int> CreateTrainingSession(TrainingSessionDTO trainingSession, string accessToken)
+        public async Task<int> CreateTrainingSessionAsync(TrainingSessionDTO trainingSession, string accessToken)
         {
-            throw new NotImplementedException();
+            var request = new RestRequest();
+            request.Method = Method.Post;
+            request.AddJsonBody<TrainingSessionDTO>(trainingSession);
+            request.AddHeader("Authorization", $"Bearer {accessToken}");
+
+            var response = await _restClient.ExecuteAsync<int>(request);
+
+            if (!response.IsSuccessful)
+            {
+                throw new Exception($"Error creating TrainingSession. Message was {response.StatusDescription}");
+            }
+
+            return response.Data;
         }
 
-        public async Task<IEnumerable<TrainingSessionDTO>> GetTrainingSessionsByUserId(string userId, string accessToken)
+        public async Task<IEnumerable<TrainingSessionDTO>> GetTrainingSessionsByUserIdAsync(string userId, string accessToken)
         {
             var request = new RestRequest();
             request.Method = Method.Get;

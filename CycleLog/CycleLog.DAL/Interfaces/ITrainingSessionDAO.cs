@@ -9,8 +9,8 @@ namespace CycleLog.DAL.Interfaces
 {
     public interface ITrainingSessionDAO
     {
-        public Task<IEnumerable<TrainingSession>> GetTrainingSessionsByUserId(string userId);
+        public Task<IEnumerable<TrainingSession>> GetTrainingSessionsByUserIdAsync(string userId);
 
-        public Task<int> CreateTrainingSession(TrainingSession trainingSession);
+        public Task<int> CreateTrainingSessionAsync(TrainingSession trainingSession);
     }
 }
