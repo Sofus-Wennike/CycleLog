@@ -5,21 +5,40 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">CycleLog</h1>
+    <p>Velkommen til CycleLog - her kan du registrere dine træninger og konkurrere mod andre ryttere.</p>
+</div>
+
+<div class="cta-container">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a class="btn-primary" href="@Url.Action("Create", "TrainingSession")">
+            Indberet ny træning
+        </a>
+    }
+    else
+    {
+        <a class="btn-primary" href="@Url.Action("Login", "Home")">
+            Login
+        </a>
+    }
 </div>
 
 <div class="leaderboard">
     <table>
-        <th>Place</th>
-        <th>Name</th>
-        <th>Total Distance</th>
+        <thead>
+            <tr>
+                <th>Place</th>
+                <th>Name</th>
+                <th>Total Distance</th>
+            </tr>
+        </thead>
         @foreach (var item in Model)
         {
             <tr>
                 <td>Place</td>
                 <td>@item.Username</td>
-                <td>@item.DistanceKm</td>
+                <td>@item.DistanceKm Km</td>
             </tr>
         }
     </table>
