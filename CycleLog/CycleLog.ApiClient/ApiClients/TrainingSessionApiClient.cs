@@ -53,5 +53,20 @@ namespace CycleLog.ApiClient.ApiClients
 
             return response.Data;
         }
+
+        public async Task<IEnumerable<TrainingSessionDTO>> GetLeaderboardAsync()
+        {
+            var request = new RestRequest("leaderboard");
+            request.Method = Method.Get;
+
+            var response = await _restClient.ExecuteAsync<IEnumerable<TrainingSessionDTO>>(request);
+
+            if (!response.IsSuccessful || response.Data == null)
+            {
+                throw new Exception($"Error getting leaderboard. Message was {response.StatusDescription}");
+            }
+
+            return response.Data;
+        }
     }
 }

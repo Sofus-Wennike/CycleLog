@@ -1,3 +1,4 @@
+using CycleLog.ApiClient.Interfaces;
 using CycleLog.MVC.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,15 +12,24 @@ namespace CycleLog.MVC.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ITrainingSessionApiClient _trainingSessionApiClient;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ITrainingSessionApiClient trainingSessionApiClient)
         {
             _logger = logger;
+            _trainingSessionApiClient = trainingSessionApiClient;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View();
+            try
+            {
+                return View(await _trainingSessionApiClient.GetLeaderboardAsync());
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error");
+            }
         }
 
         [Authorize]

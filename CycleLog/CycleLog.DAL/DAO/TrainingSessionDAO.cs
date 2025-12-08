@@ -19,27 +19,56 @@ namespace CycleLog.DAL.DAO
             _connectionString = connectionString;
         }
 
-        public async Task<int> CreateTrainingSessionAsync(TrainingSession trainingSession)
+        public async Task<IEnumerable<TrainingSession>> GetLeaderboardAsync()
         {
-            string sql = @"INSERT INTO TrainingSessions (UserId, DistanceKm) VALUES (@UserId, @DistanceKm) RETURNING Id;";
+            string sql = @"SELECT u.UserId, u.Username, SUM(ts.DistanceKm) AS DistanceKm FROM TrainingSessions ts JOIN Users u ON ts.UserId = u.UserId GROUP BY u.UserId, u.Username ORDER BY DistanceKm DESC LIMIT 10;";
 
             using (var connection = new NpgsqlConnection(_connectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
-                using (var transaction = connection.BeginTransaction())
+                IEnumerable<TrainingSession> trainingSessions = await connection.QueryAsync<TrainingSession>(sql);
+
+                return trainingSessions;
+            }
+        }
+
+        public async Task<int> CreateTrainingSessionAsync(TrainingSession trainingSession)
+        {
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var transaction = await connection.BeginTransactionAsync())
                 {
                     try
                     {
-                        int newId = await connection.ExecuteScalarAsync<int>(sql,
+                        string updateOrInsertUserSql = @"
+                            INSERT INTO Users (UserId, Username) 
+                            VALUES (@UserId, @Username) 
+                            ON CONFLICT (UserId) DO UPDATE
+                            SET Username = EXCLUDED.Username;";
+
+                        await connection.ExecuteAsync(updateOrInsertUserSql,
+                            new
+                            {
+                                UserId = trainingSession.UserId,
+                                Username = trainingSession.Username
+                            }, transaction);
+
+                        string insertTrainingSessionSql = @"
+                            INSERT INTO TrainingSessions (UserId, DistanceKm) 
+                            VALUES (@UserId, @DistanceKm) 
+                            RETURNING Id;";
+
+                        int newId = await connection.ExecuteScalarAsync<int>(insertTrainingSessionSql,
                             new
                             {
                                 UserId = trainingSession.UserId,
                                 DistanceKm = trainingSession.DistanceKm
-                            }, 
-                            transaction);
+                            }, transaction);
 
-                        transaction.Commit();
+                        await transaction.CommitAsync();
 
                         return newId;
                     }
@@ -55,11 +84,11 @@ namespace CycleLog.DAL.DAO
 
         public async Task<IEnumerable<TrainingSession>> GetTrainingSessionsByUserIdAsync(string userId)
         {
-            string sql = @"SELECT * FROM TrainingSessions WHERE UserId = @UserId;";
+            string sql = @"SELECT u.UserId, u.Username, ts.DistanceKm FROM TrainingSessions ts JOIN Users u ON ts.UserId = u.UserId WHERE u.UserId = @UserId;";
 
             using (var connection = new NpgsqlConnection(_connectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 IEnumerable<TrainingSession> trainingSessions = await connection.QueryAsync<TrainingSession>(sql,
                     new

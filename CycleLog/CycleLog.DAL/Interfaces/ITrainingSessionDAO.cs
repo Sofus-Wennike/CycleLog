@@ -12,5 +12,7 @@ namespace CycleLog.DAL.Interfaces
         public Task<IEnumerable<TrainingSession>> GetTrainingSessionsByUserIdAsync(string userId);
 
         public Task<int> CreateTrainingSessionAsync(TrainingSession trainingSession);
+
+        public Task<IEnumerable<TrainingSession>> GetLeaderboardAsync();
     }
 }

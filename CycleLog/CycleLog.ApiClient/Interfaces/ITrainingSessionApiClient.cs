@@ -12,5 +12,7 @@ namespace CycleLog.ApiClient.Interfaces
         public Task<IEnumerable<TrainingSessionDTO>> GetTrainingSessionsByUserIdAsync(string userId, string accessToken);
 
         public Task<int> CreateTrainingSessionAsync(TrainingSessionDTO trainingSession, string accessToken);
+
+        public Task<IEnumerable<TrainingSessionDTO>> GetLeaderboardAsync();
     }
 }

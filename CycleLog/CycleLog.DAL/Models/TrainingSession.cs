@@ -10,6 +10,7 @@ namespace CycleLog.DAL.Models
     {
         public int Id { get; set; }
         public string UserId { get; set; }
+        public string Username { get; set; }
         public double DistanceKm { get; set; }
     }
 }

@@ -51,6 +51,7 @@ namespace CycleLog.Api.Controllers
                 {
                     Id = dto.Id,
                     UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                    Username = User.FindFirst("preferred_username")?.Value,
                     DistanceKm = dto.DistanceKm
                 };
 
@@ -61,6 +62,21 @@ namespace CycleLog.Api.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message); //TODO: ex.Message skal måske ikke sendes med!
+            }
+        }
+
+        [HttpGet("leaderboard")]
+        public async Task<ActionResult<IEnumerable<TrainingSessionDTO>>> GetLeaderboardAsync()
+        {
+            try
+            {
+                IEnumerable<TrainingSession> trainingSessions = await _trainingSessionDAO.GetLeaderboardAsync();
+
+                return Ok(trainingSessions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
