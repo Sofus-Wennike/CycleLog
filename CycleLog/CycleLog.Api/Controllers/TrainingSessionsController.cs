@@ -52,7 +52,9 @@ namespace CycleLog.Api.Controllers
                     Id = dto.Id,
                     UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                     Username = User.FindFirst("preferred_username")?.Value,
-                    DistanceKm = dto.DistanceKm
+                    DistanceKm = dto.DistanceKm,
+                    AverageSpeed = dto.AverageSpeed,
+                    Duration = dto.Duration
                 };
 
                 int newId = await _trainingSessionDAO.CreateTrainingSessionAsync(trainingSession);
