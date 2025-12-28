@@ -18,6 +18,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.DistanceKm)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AverageSpeed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -29,6 +35,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DistanceKm)
+            </td>
+            <td>
+                @Html.DisplayFor(modeItem => item.AverageSpeed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
             </td>
             <td>
                 @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
