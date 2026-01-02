@@ -26,7 +26,7 @@ jobs:
         username=${{ github.actor }}
         username=${username,,} # convert to lowercase
         docker build -t ghcr.io/$username/cyclelog-api:develop -f CycleLog/CycleLog.Api/Dockerfile CycleLog
-        docker push ghcr.io/$username/cookbook-api:develop
+        docker push ghcr.io/$username/cyclelog-api:develop
 
     - name: Build and push CycleLog.MVC image
       run: |
