@@ -14,5 +14,6 @@ namespace CycleLog.DAL.Models
         public double DistanceKm { get; set; }
         public double AverageSpeed {  get; set; }
         public TimeSpan Duration { get; set; }
+        public bool IsIndoor { get; set; }
     }
 }

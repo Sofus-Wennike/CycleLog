@@ -28,6 +28,12 @@
                 <span asp-validation-for="Duration" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <!--IsIndoor is currently always set to true. Label is removed since the user can't input anything-->
+                <!--<label asp-for="IsIndoor" class="control-label"></label>-->
+                <input type="hidden" value="true" asp-for="IsIndoor" class="form-control" />
+                <span asp-validation-for="IsIndoor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
