@@ -3,6 +3,7 @@ using CycleLog.ApiClient.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace CycleLog.MVC
 {
@@ -70,6 +71,18 @@ namespace CycleLog.MVC
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            // Tell ASP.NET to respect forwarded headers from the proxy
+            var forwardedOptions = new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            };
+
+            // Optional: trust all proxies (be careful in untrusted networks)
+            forwardedOptions.KnownNetworks.Clear();
+            forwardedOptions.KnownProxies.Clear();
+
+            app.UseForwardedHeaders(forwardedOptions);
 
             app.UseRouting();
 
