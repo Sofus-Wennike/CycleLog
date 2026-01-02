@@ -1,0 +1,36 @@
+name: Build & Push Docker Images
+
+on:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Log in to GitHub Container Registry
+      run: |
+        username=${{ github.actor }}
+        username=${username,,} # convert to lowercase
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $username --password-stdin
+
+    - name: Build and push CycleLog.Api image
+      run: |
+        username=${{ github.actor }}
+        username=${username,,} # convert to lowercase
+        docker build -t ghcr.io/$username/cyclelog-api:develop -f CycleLog.Api/Dockerfile .
+        docker push ghcr.io/$username/cookbook-api:develop
+
+    - name: Build and push CycleLog.MVC image
+      run: |
+        username=${{ github.actor }}
+        username=${username,,}
+        docker build -t ghcr.io/$username/cyclelog-mvc:develop -f CycleLog.MVC/Dockerfile .
+        docker push ghcr.io/$username/cyclelog-mvc:develop
